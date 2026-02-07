@@ -1,0 +1,160 @@
+/**
+ * Core Philosophy: This ruleset enforces a strict user-ownership model. All data
+ * is private to the user who created it, and there are no public or shared
+ * collections. A user must be authenticated to access any data, and they can
+ * only interact with documents that fall under their own unique user ID path.
+ *
+ * Data Structure: The data is organized hierarchically to reflect ownership.
+ * All application data is nested under the `/users/{userId}` collection. This
+ * top-level document stores the user's profile. Subcollections for `documents`
+ * and `chats` are nested within this user-specific data tree, ensuring that
+ * path-based security can be applied consistently.
+ *
+ * Key Security Decisions:
+ * - No Public Access: All collections are private. Unauthenticated access is
+ *   denied everywhere.
+ * - No User Listing: It is impossible to query the top-level `/users`
+ *   collection to enumerate all users in the system.
+ * - Path-Based Security: All security rules leverage the `{userId}` wildcard
+ *   from the document path. This is fast and secure, avoiding slow and costly
+ *   `get()` calls to other documents for authorization checks.
+ * - Relational Integrity: On document creation, rules ensure that internal ID
+ *   fields (like `userId` on a Document) match the IDs in the path. On update,
+ *   these fields are enforced as immutable to prevent documents from being
+ *   "moved" between owners.
+ *
+ * Denormalization for Authorization: The data model denormalizes the `userId`
+ * onto every `Document` and `Chat` record. This allows security rules to
+ * validate data consistency on creation without needing to read other documents,
+ * making the rules more performant and secure.
+ *
+ * Structural Segregation: The use of distinct, nested subcollections
+ * (`/documents`, `/chats`) under a user's primary document provides a clear and
+ * secure separation of data types, which is inherently more secure and scalable
+ * than using flags within a single, mixed-content collection.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ----------------------------------------------------------------------
+    // Helper Functions
+    // ----------------------------------------------------------------------
+
+    /**
+     * Checks if a user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the currently authenticated user's UID matches the given userId.
+     * This is the primary function for enforcing data ownership.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Checks for ownership and that the document already exists.
+     * CRITICAL for all update and delete operations to prevent modifying
+     * or deleting documents that do not exist.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * Validates that the User document being created has an 'id' field
+     * that correctly matches the document's path ID ({userId}).
+     */
+    function isValidUserCreate(userId) {
+      return request.resource.data.id == userId;
+    }
+
+    /**
+     * Enforces immutability of the User's 'id' field on update.
+     */
+    function isImmutableUser() {
+      return request.resource.data.id == resource.data.id;
+    }
+
+    /**
+     * Validates that the Document being created has a 'userId' field
+     * that correctly matches the owner's ID from the path.
+     */
+    function isValidDocumentCreate(userId) {
+      return request.resource.data.userId == userId;
+    }
+
+    /**
+     * Enforces immutability of the Document's 'userId' field on update.
+     */
+    function isImmutableDocument() {
+      return request.resource.data.userId == resource.data.userId;
+    }
+
+    /**
+     * Validates that the Chat being created has 'userId' and 'documentId'
+     * fields that correctly match the IDs from the path.
+     */
+    function isValidChatCreate(userId, documentId) {
+      return request.resource.data.userId == userId && request.resource.data.documentId == documentId;
+    }
+
+    /**
+     * Enforces immutability of the Chat's 'userId' and 'documentId' fields on update.
+     */
+    function isImmutableChat() {
+      return request.resource.data.userId == resource.data.userId && request.resource.data.documentId == resource.data.documentId;
+    }
+
+
+    // ----------------------------------------------------------------------
+    // Collection Rules
+    // ----------------------------------------------------------------------
+
+    /**
+     * @description Controls access to a user's own profile document.
+     * @path /users/{userId}
+     * @allow (create) An authenticated user creating their own user profile document for the first time.
+     * @deny (get) An authenticated user trying to read another user's profile.
+     * @principle Restricts access to a user's own data tree and allows self-creation of a profile.
+     */
+    match /users/{userId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUserCreate(userId);
+      allow update: if isExistingOwner(userId) && isImmutableUser();
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Controls access to documents owned by a user.
+     * @path /users/{userId}/documents/{documentId}
+     * @allow (create) An authenticated user creating a new document under their own profile.
+     * @deny (list) An authenticated user trying to list documents belonging to another user.
+     * @principle Enforces strict ownership for all operations on a user's private documents.
+     */
+    match /users/{userId}/documents/{documentId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidDocumentCreate(userId);
+      allow update: if isExistingOwner(userId) && isImmutableDocument();
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Controls access to chat sessions associated with a user's document.
+     * @path /users/{userId}/documents/{documentId}/chats/{chatId}
+     * @allow (update) The document owner updating a chat session within their own document.
+     * @deny (create) A user trying to create a chat session under another user's document.
+     * @principle Enforces strict ownership for all operations on deeply nested user data.
+     */
+    match /users/{userId}/documents/{documentId}/chats/{chatId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidChatCreate(userId, documentId);
+      allow update: if isExistingOwner(userId) && isImmutableChat();
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}

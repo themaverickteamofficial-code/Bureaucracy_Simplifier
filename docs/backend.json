@@ -1,0 +1,184 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user in the system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user.",
+          "format": "uuid"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the user.",
+          "format": "email"
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email"
+      ]
+    },
+    "Document": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Document",
+      "type": "object",
+      "description": "Represents a document uploaded by a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the document.",
+          "format": "uuid"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Document)"
+        },
+        "filename": {
+          "type": "string",
+          "description": "The original filename of the document."
+        },
+        "storagePath": {
+          "type": "string",
+          "description": "The path to the document in storage."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time the document was uploaded.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "filename",
+        "storagePath",
+        "createdAt"
+      ]
+    },
+    "Chat": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Chat",
+      "type": "object",
+      "description": "Represents a chat session between a user and the AI.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the chat session.",
+          "format": "uuid"
+        },
+        "documentId": {
+          "type": "string",
+          "description": "Reference to Document. (Relationship: Document 1:N Chat).  Can be null if the chat is not related to a specific document.",
+          "format": "uuid"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Chat)"
+        },
+        "messages": {
+          "type": "array",
+          "description": "An array of messages in the chat session.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "The date and time the chat session was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "messages",
+        "updatedAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile information.  Uses path-based ownership for private user data.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/documents/{documentId}",
+        "definition": {
+          "entityName": "Document",
+          "schema": {
+            "$ref": "#/backend/entities/Document"
+          },
+          "description": "Stores documents uploaded by the user. Uses path-based ownership.  The 'userId' is denormalized to enable authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "documentId",
+              "description": "The unique identifier of the document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/documents/{documentId}/chats/{chatId}",
+        "definition": {
+          "entityName": "Chat",
+          "schema": {
+            "$ref": "#/backend/entities/Chat"
+          },
+          "description": "Stores chat sessions associated with a document. Uses path-based ownership. The 'userId' and 'documentId' are denormalized to enable authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "documentId",
+              "description": "The unique identifier of the document."
+            },
+            {
+              "name": "chatId",
+              "description": "The unique identifier of the chat session."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to support the 'Citizen Simplified' application, focusing on secure user authentication and document management.  The structure is built upon the principles of Authorization Independence, Structural Segregation, and clear Access Modeling. User data is stored in a dedicated collection (`/users/{userId}`) ensuring private data is path-based. Documents are organized as a subcollection of users (`/users/{userId}/documents/{documentId}`), maintaining the User 1:N Document relationship. Chats are similarly organized within the document context (`/users/{userId}/documents/{documentId}/chats/{chatId}`), ensuring a clear hierarchy and ownership. This design avoids hierarchical authorization dependencies by leveraging path-based ownership and thus eliminates the need for `get()` calls in security rules. This design supports the required QAPs by segregating data based on user ownership and allows secure list operations within the user's documents and chats. Authentication relies solely on `request.auth.uid`, adhering to the DBAC principle."
+  }
+}

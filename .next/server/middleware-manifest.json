@@ -1,0 +1,33 @@
+{
+  "version": 3,
+  "middleware": {
+    "/": {
+      "files": [
+        "server/edge/chunks/Desktop_Bureaucracy_Simplifier_0df395b1._.js",
+        "server/edge/chunks/[root-of-the-server]__2c5ea454._.js",
+        "server/edge/chunks/turbopack-Desktop_Bureaucracy_Simplifier_edge-wrapper_d4dfd087.js"
+      ],
+      "name": "middleware",
+      "page": "/",
+      "matchers": [
+        {
+          "regexp": "^/.*$",
+          "originalSource": "/:path*"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "development",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "1AU5y22fbxTpjZagQI5Qv79Y5JxhaoodXFStcl9yGAg=",
+        "__NEXT_PREVIEW_MODE_ID": "0670264fd07eda066aa88ce34aa61691",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "9e2660633e4c8ee8650164c77b59cbeee5371b7eb307ff90795197dba9f4f617",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "352cdcf316c612a9dac8baea8dd4bf9b55a39953d67a6be79f419923e62b825c"
+      }
+    }
+  },
+  "sortedMiddleware": [
+    "/"
+  ],
+  "functions": {}
+}

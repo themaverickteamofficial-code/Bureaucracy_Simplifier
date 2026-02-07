@@ -1,0 +1,35 @@
+{
+  "node": {
+    "4028bc73dce272c65d1a502dfb899540681ca01f7d": {
+      "workers": {
+        "app/dashboard/document/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/dashboard/document/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/simplify-document.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/ai/flows/conversational-chat.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "simplifyDocument",
+          "filename": "src/ai/flows/simplify-document.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/document/[id]/page": "action-browser"
+      },
+      "exportedName": "simplifyDocument",
+      "filename": "src/ai/flows/simplify-document.ts"
+    },
+    "4020421832d18e64fddf49b5d6e541a271b2ab490d": {
+      "workers": {
+        "app/dashboard/document/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/dashboard/document/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/simplify-document.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/ai/flows/conversational-chat.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "chatWithDocument",
+          "filename": "src/ai/flows/conversational-chat.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/document/[id]/page": "action-browser"
+      },
+      "exportedName": "chatWithDocument",
+      "filename": "src/ai/flows/conversational-chat.ts"
+    }
+  },
+  "edge": {}
+}

@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/Desktop/Bureaucracy_Simplifier/middleware.ts"],"sourcesContent":["import { NextResponse } from 'next/server'\r\nimport type { NextRequest } from 'next/server'\r\n\r\n// This function can be marked `async` if using `await` inside\r\nexport function middleware(request: NextRequest) {\r\n    // Clone the request headers and set a new header `x-hello-from-middleware1`\r\n    const requestHeaders = new Headers(request.headers)\r\n    requestHeaders.set('x-hello-from-middleware1', 'hello')\r\n\r\n\r\n    // You can also set request headers in NextResponse.rewrite\r\n    return NextResponse.next({\r\n        request: {\r\n        // New request headers\r\n        headers: requestHeaders,\r\n        },\r\n    })\r\n}\r\n"],"names":[],"mappings":";;;;AAAA;AAAA;;AAIO,SAAS,WAAW,OAAoB;IAC3C,4EAA4E;IAC5E,MAAM,iBAAiB,IAAI,QAAQ,QAAQ,OAAO;IAClD,eAAe,GAAG,CAAC,4BAA4B;IAG/C,2DAA2D;IAC3D,OAAO,qOAAY,CAAC,IAAI,CAAC;QACrB,SAAS;YACT,sBAAsB;YACtB,SAAS;QACT;IACJ;AACJ"}}]
+}

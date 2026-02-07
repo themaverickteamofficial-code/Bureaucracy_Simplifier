@@ -1,0 +1,3 @@
+{
+  "/(auth)/dashboard/history/page": "app/(auth)/dashboard/history/page.js"
+}

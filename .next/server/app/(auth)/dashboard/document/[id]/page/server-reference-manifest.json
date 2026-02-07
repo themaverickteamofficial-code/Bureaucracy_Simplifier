@@ -1,0 +1,35 @@
+{
+  "node": {
+    "40bb62026c67461b7119760cddc5c6b6da5f1cf322": {
+      "workers": {
+        "app/(auth)/dashboard/document/[id]/page": {
+          "moduleId": "[project]/Desktop/Bureaucracy_Simplifier/.next-internal/server/app/(auth)/dashboard/document/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/Desktop/Bureaucracy_Simplifier/src/ai/flows/simplify-document.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/Desktop/Bureaucracy_Simplifier/src/ai/flows/conversational-chat.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "simplifyDocument",
+          "filename": "Desktop/Bureaucracy_Simplifier/src/ai/flows/simplify-document.ts"
+        }
+      },
+      "layer": {
+        "app/(auth)/dashboard/document/[id]/page": "action-browser"
+      },
+      "exportedName": "simplifyDocument",
+      "filename": "Desktop/Bureaucracy_Simplifier/src/ai/flows/simplify-document.ts"
+    },
+    "40e06f5a69d5b2ce5c9fb07a579f6246aa256e14d7": {
+      "workers": {
+        "app/(auth)/dashboard/document/[id]/page": {
+          "moduleId": "[project]/Desktop/Bureaucracy_Simplifier/.next-internal/server/app/(auth)/dashboard/document/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/Desktop/Bureaucracy_Simplifier/src/ai/flows/simplify-document.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/Desktop/Bureaucracy_Simplifier/src/ai/flows/conversational-chat.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "chatWithDocument",
+          "filename": "Desktop/Bureaucracy_Simplifier/src/ai/flows/conversational-chat.ts"
+        }
+      },
+      "layer": {
+        "app/(auth)/dashboard/document/[id]/page": "action-browser"
+      },
+      "exportedName": "chatWithDocument",
+      "filename": "Desktop/Bureaucracy_Simplifier/src/ai/flows/conversational-chat.ts"
+    }
+  },
+  "edge": {}
+}

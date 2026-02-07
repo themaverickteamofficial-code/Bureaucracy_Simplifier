@@ -1,0 +1,13 @@
+
+# Firebase
+firebase-functions
+firebase-admin
+
+# Google Cloud
+google-cloud-aiplatform
+google-cloud-documentai
+google-cloud-storage
+
+# Web Framework Utilities
+Werkzeug
+functions-framework
